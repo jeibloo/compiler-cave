@@ -5,10 +5,10 @@ MAJORITY OF CODE FROM ^^^ LLVM SITE */
 #include <string>
 #include <vector>
 
-/* Chapter 1: the lexer (precursor to the parser)
-A lexer is essentially a scanner to interpret a language
+/* Chapter 1: the Lexer (precursor to the parser)
+A Lexer is essentially a scanner to interpret a language.
 It breaks the input up into tokens, each token returned by lexer includes
-a token code and metadata (numeric value of number or something) */
+a token code and metadata (numeric value of number or something). */
 
 // Returns tokens [0-255] if unknown character, otherwise one of these for
 // the knowns.
@@ -81,3 +81,56 @@ static int gettok() {
     LastChar = getchar();
     return ThisChar;
 }
+
+/* Chapter 2a: Abstract Syntax Tree
+An abstract syntax tree (is the output of the parser),
+captures a program's behaviour so that later
+stages of the compiler (code generation) can interpret it easier.
+One object for each construct in language.
+We got expressions, a prototype, & function object.
+*/
+
+// ExprAST - Base class for all expression nodes(?)
+// I see, it's for the one below and other like it...obviously I guess lol
+class ExprAST {
+public:
+    // Tilde in this context is ?
+    virtual ~ExprAST() {}
+};
+
+// NumberExprAST - Expression class for numeric literals
+class NumberExprAST : public ExprAST {
+    double Val;
+public:
+    NumberExprAST(double Val) : Val(Val) {}
+};
+
+// VariableExprAST - Expression class for variables
+class VariableExprAST: public ExprAST {
+    std::string Name;
+public:
+    VariableExprAST(const std::string &Name) : Name(Name) {}
+};
+
+// BinaryExprAST - Expression class for binary operators
+class BinaryExprAST: public ExprAST {
+    char Op;
+    std::unique_ptr<ExprAST> LHS, RHS;
+public:
+    BinaryExprAST(char op, std::unique_ptr<ExprAST> LHS,
+                  std::unique_ptr<ExprAST> RHS)
+        : Op(op), LHS(std::move(LHS)), RHS(std::move(RHS)) {}
+};
+
+// CallExprAST - Expression class for func calls
+class CallExprAST : public ExprAST {
+    std::string Callee;
+    std::vector<std::unique_ptr<ExprAST>> Args;
+public:
+    CallExprAST(const std::string &Callee,
+                std::vector<std::unique_ptr<ExprAST>> Args)
+        : Callee(Callee), Args(std::move(Args)) {}
+};
+
+/* Chapter 2b: Parser
+*/
