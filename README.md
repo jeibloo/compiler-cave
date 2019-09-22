@@ -13,3 +13,6 @@ way they describe how to 'tokenize' the inputs and separate it into parts that t
 whatever that's going to mean lmao.
 
 ---
+
+2019/09/22
+  * Yeayeayea
