@@ -94,7 +94,7 @@ We got expressions, a prototype, & function object.
 // I see, it's for the one below and other like it...obviously I guess lol
 class ExprAST {
 public:
-    // Tilde in this context is ?
+    // Tilde in this context is a destructor (wow can't believe I forgot that lol)
     virtual ~ExprAST() {}
 };
 
