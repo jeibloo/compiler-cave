@@ -99,6 +99,7 @@ public:
 };
 
 // NumberExprAST - Expression class for numeric literals
+// NumberExprAST is the derived class from ExprAST
 class NumberExprAST : public ExprAST {
     double Val;
 public:
@@ -115,14 +116,19 @@ public:
 // BinaryExprAST - Expression class for binary operators
 class BinaryExprAST: public ExprAST {
     char Op;
-    std::unique_ptr<ExprAST> LHS, RHS;
+    // unique_ptr -> smart pointer that 'owns & manages another object thru
+    // a pointer and disposes of object when unique_ptr goes out of scope'
+    // Garbage collection stuff, no other pointer can delete the managed object
+    std::unique_ptr<ExprAST> LHS, RHS; // left-hand side, right-hand side.
+    // < ? > the signs hold the type
 public:
+    // So ugly, don't fully understand yet oh well
     BinaryExprAST(char op, std::unique_ptr<ExprAST> LHS,
                   std::unique_ptr<ExprAST> RHS)
         : Op(op), LHS(std::move(LHS)), RHS(std::move(RHS)) {}
 };
 
-// CallExprAST - Expression class for func calls
+// CallExprAST - Expression class for func calls (?)
 class CallExprAST : public ExprAST {
     std::string Callee;
     std::vector<std::unique_ptr<ExprAST>> Args;
@@ -130,6 +136,27 @@ public:
     CallExprAST(const std::string &Callee,
                 std::vector<std::unique_ptr<ExprAST>> Args)
         : Callee(Callee), Args(std::move(Args)) {}
+};
+
+// PrototypeAST - class is the prototype for a func,
+// gets name and argument names + # of args func takes
+class PrototypeAST {
+    std::string Name;
+    std::vector<std::string> Args;
+public:
+    PrototypeAST(const std::string &name, std::vector<std::string> Args)
+        : Name(name), Args(std::move(Args)) {}
+    const std::string &getName() const { return Name; }
+};
+
+// FunctionAST - represents function definition itself
+class FunctionAST {
+    std::unique_ptr<PrototypeAST> Proto;
+    std::unique_ptr<ExprAST> Body;
+public:
+    FunctionAST(std::unique_ptr<PrototypeAST> Proto,
+                std::unique_ptr<ExprAST> Body)
+        : Proto(std::move(Proto)), Body(std::move(Body)) {}
 };
 
 /* Chapter 2b: Parser
