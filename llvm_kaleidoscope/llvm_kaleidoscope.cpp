@@ -160,4 +160,31 @@ public:
 };
 
 /* Chapter 2b: Parser
+"referring to the syntactic analysis of the 
+input code into its component parts in order 
+to facilitate the writing of compilers and interpreters" - Wikipedia
+My current idea of what it is TBD
 */
+
+// CurTok/getNextToken - token buffer (?). CurTok is current token parser watching,
+// getNextToken reads another token from lexer and updates CurTok w/ results (?)
+static int CurTok;
+static int getNextToken() {
+    // implements token buffer around lexer, and looks at one token ahead as explained above
+    return CurTok = gettok();
+}
+
+// LogError for helping us with error handling
+// Not the best but this is good enough
+std::unique_ptr<ExprAST> LogError(const char *Str) {
+    fprintf(stderr, "LogError: %s\n", Str);
+    return nullptr;
+}
+std::unique_ptr<PrototypeAST> LogErrorP(const char *Str) {
+    LogError(Str);
+    return nullptr;
+}
+
+// NOW WE MOVE ONTO OUR FIRST GRAMMATICAL CONSTRUCT!!!!
+// NUMERIC LITERALSSSSSSSSSSSSSSS
+// numberexpr ::= number
