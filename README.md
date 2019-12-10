@@ -31,3 +31,17 @@ whatever that's going to mean lmao.
    * For whatever reason I had forgotten to add the `PrototypeAST` and the `FunctionAST`, so I did that, but I had to understand what these `std::move` things were a bit. Apparently there's such a [thing](https://en.cppreference.com/w/cpp/language/value_category) as an lvalue and an xvalue in C++...not sure what any of it means but it seems like forcing something to be an xvalue allows other stuff to move anything the object is holding. Not a good explanation but it's in that ballpark or whatever.
    * In this toy Kaleidoscope language it says on LLVM's site that "...functions are typed with just a count of their arguments", apparently the arguments are just floating-points and so explicitly setting a type or something in the `ExprAST` class isn't really needed for this. All of this is a little (read: big) confusing but I'll roll with it. 
    * Despite not fully *fully* getting everything, I shall be moving onto the implementation of the parser, thank god.
+
+---
+
+2019/12/09
+ * Two days in a row? Must be close to Christmas. I looked ahead and saw dragons so I felt compelled to start on the Parser stuff today.
+ * Apparently this parser here in chapter 2 is what we need before we build the AST. Now as I've mentioned before this parser is a combo of some recursive descent stuff and operator-precedence stuff, really not sure what any of it means and I'm *really* not sure why it implies we need to build a parser _then_ an Abstract Syntax Tree when the instructions have the AST first and then the parser...but idk I'm not complaining lol.
+ * "_parse something like “x+y” (which is returned as three tokens by the lexer) into an AST that can be generated with calls like this_" then goes onto showing this:
+```
+auto LHS = std::make_unique<VariableExprAST>("x");
+auto RHS = std::make_unique<VariableExprAST>("y");
+auto Result = std::make_unique<BinaryExprAST>('+', std::move(LHS),
+                                              std::move(RHS));
+```
+ * Beautiful isn't it?
