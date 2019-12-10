@@ -36,7 +36,7 @@ whatever that's going to mean lmao.
 
 2019/12/09
  * Two days in a row? Must be close to Christmas. I looked ahead and saw dragons so I felt compelled to start on the Parser stuff today.
- * Apparently this parser here in chapter 2 is what we need before we build the AST. Now as I've mentioned before this parser is a combo of some recursive descent stuff and operator-precedence stuff, really not sure what any of it means and I'm *really* not sure why it implies we need to build a parser _then_ an Abstract Syntax Tree when the instructions have the AST first and then the parser...but idk I'm not complaining lol.
+ * Apparently this parser here in chapter 2 is what we need before we build the AST. Now as I've mentioned before this parser is a combo of some recursive descent stuff and operator-precedence stuff, really not sure what any of it means and I'm *really* not sure why it implies we need to build a parser _then_ an Abstract Syntax Tree when the instructions have the AST first and then the parser...but idk my intuition is telling me that I'm probably just not understanding something.
  * "_parse something like “x+y” (which is returned as three tokens by the lexer) into an AST that can be generated with calls like this_" then goes onto showing this:
 ```
 auto LHS = std::make_unique<VariableExprAST>("x");
@@ -44,4 +44,9 @@ auto RHS = std::make_unique<VariableExprAST>("y");
 auto Result = std::make_unique<BinaryExprAST>('+', std::move(LHS),
                                               std::move(RHS));
 ```
- * Beautiful isn't it?
+ * Beautiful isn't it? (joke) 
+ * Had to review what a few things were: `auto` means a deduced type, so 'become' int if value is int or something like that. `std::make_unique` works with `unique_ptr` in some way where if we used `new` instead it would be some sort of hassle so...guess we just use `make_unique` instead, [here's](https://stackoverflow.com/questions/37514509/advantages-of-using-stdmake-unique-over-new-operator) stackoverflow word-vomit related to its use.
+ * There's so much more to the C++ code but I can't wrap my head around it right now, maybe later when I've found patience.
+ * From the tutorial it made me write something called a token buffer which basically implements a buffer around the lexer, looking one token ahead and presumably we'll use this to determine what the "user's" code.
+ * I think also wrote a small LogError function that takes a `const char *Str` and then returns a `nullptr` which'll help us debug our code a bit but is bare minimum.
+ * Sometime this week is creating my first piece of grammar. AKA: numeric literals :O
