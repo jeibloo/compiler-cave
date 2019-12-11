@@ -50,3 +50,17 @@ auto Result = std::make_unique<BinaryExprAST>('+', std::move(LHS),
  * From the tutorial it made me write something called a token buffer which basically implements a buffer around the lexer, looking one token ahead and presumably we'll use this to determine what the "user's" code.
  * I think also wrote a small LogError function that takes a `const char *Str` and then returns a `nullptr` which'll help us debug our code a bit but is bare minimum.
  * Sometime this week is creating my first piece of grammar. AKA: numeric literals :O
+
+---
+
+2019/12/10
+ ```
+ static std::unique_ptr<ExprAST> ParseNumberExpr() {
+  auto Result = std::make_unique<NumberExprAST>(NumVal);
+  getNextToken(); // consume the number
+  return std::move(Result);
+}
+ ```
+ * `static` I'm actually not sure what static means in this context considering it has (I think) a few meanings in C++...
+ * Apparently this parsing routine "_expects to be called when the current token is a tok_number token_" and "_takes current number value, creates a NumberExprAst node, advances the lexer to the next token_" and then returns it.
+ * Seems premature but that little bit of code is all I have energy for today, we'll get to the end eventually...right? Lol
