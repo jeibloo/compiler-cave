@@ -188,3 +188,8 @@ std::unique_ptr<PrototypeAST> LogErrorP(const char *Str) {
 // NOW WE MOVE ONTO OUR FIRST GRAMMATICAL CONSTRUCT!!!!
 // NUMERIC LITERALSSSSSSSSSSSSSSS
 // numberexpr ::= number
+static std::unique_ptr<ExprAST> ParseNumberExpr() {
+    auto Result = std::make_unique<NumberExprAST>(NumVal);
+    getNextToken(); // 'consume' number (?)
+    return std::move(Result);
+}
