@@ -1,17 +1,18 @@
 /* https://llvm.org/docs/tutorial/MyFirstLanguageFrontend/index.html
-MAJORITY OF CODE FROM ^^^ LLVM SITE */
+MAJORITY (PRETTY MUCH ALL) OF CODE FROM ^^^ LLVM SITE */
 #include <cstdio>
 #include <cctype>
 #include <string>
 #include <vector>
+#include <memory>
 
-/* Chapter 1: the Lexer (precursor to the parser)
+
+/*Chapter 1: the Lexer (precursor to the parser)
 A Lexer is essentially a scanner to interpret a language.
 It breaks the input up into tokens, each token returned by lexer includes
-a token code and metadata (numeric value of number or something). */
-
-// Returns tokens [0-255] if unknown character, otherwise one of these for
-// the knowns.
+a token code and metadata (numeric value of number or something).
+Returns tokens [0-255] if unknown character, otherwise one of these for
+the knowns.*/
 // TODO: Add more tokens to recognize perhaps
 enum Token {
     tok_eof = -1,
@@ -192,4 +193,65 @@ static std::unique_ptr<ExprAST> ParseNumberExpr() {
     auto Result = std::make_unique<NumberExprAST>(NumVal);
     getNextToken(); // 'consume' number (?)
     return std::move(Result);
+}
+
+// parenexpr ::= '(' expression ')' quotes around parens cause
+// that's what this detects
+static std::unique_ptr<ExprAST> ParseParenExpr() {
+    getNextToken(); // NOM the first '('
+    // This is apparently a recursive thingie going on here...
+    // I am NOT good with recursion but I better learn quick
+    // considering that's legit how this all works lmao
+    auto V = ParseExpression(); // this function hasn't appeared yet
+    if (!V) {
+        return nullptr;
+    }
+    if (CurTok != ')') {
+        return LogError("expected ')'"); // Oooh logerror!
+        // Make sure there isn't errant ')'s in the lil' expression
+        // Just noticed they call it a 'subexpression' ooonice
+    }
+    getNextToken(); // gets ')'
+    return V;
+}
+
+// identifierexpr
+//  ::= identifier
+//  ::= identifier '(' expression* ')' oh a little star
+static std::unique_ptr<ExprAST> ParseIdentifierExpr() {
+    // Hey IdentifierStr was from the very beginning. It holds the value of the
+    // token if it's an identifier fyi
+    std::string IdName = IdentifierStr;
+
+    getNextToken(); // gets identifier
+
+    if (CurTok != '(') {
+        return std::make_unique<VariableExprAST>(IdName);
+    }
+
+    // Call(?)
+    getNextToken(); // Nom the '('
+    std::vector<std::unique_ptr<ExprAST>> Args;
+    if (CurTok != ')') {
+        while (1) {
+            // Again with this ParseExpression...excited to see what it looks like
+            if (auto Arg = ParseExpression())
+                Args.push_back(std::move(Arg));
+            else
+                return nullptr;
+            
+            // Make sure the inside of the parens got the right stuff I guess?
+            if (CurTok == ')')
+                break;
+            if (CurTok != ',')
+                return LogError("Expected ')' or ',' in argument list");
+            
+            getNextToken();
+        }
+    }
+
+    // Nom the ')'
+    getNextToken();
+
+    return std::make_unique<CallExprAST>(IdName, std::move(Args));
 }
