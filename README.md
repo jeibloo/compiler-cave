@@ -64,3 +64,19 @@ auto Result = std::make_unique<BinaryExprAST>('+', std::move(LHS),
  * `static` I'm actually not sure what static means in this context considering it has (I think) a few meanings in C++...
  * Apparently this parsing routine "_expects to be called when the current token is a tok_number token_" and "_takes current number value, creates a NumberExprAst node, advances the lexer to the next token_" and then returns it.
  * Seems premature but that little bit of code is all I have energy for today, we'll get to the end eventually...right? Lol
+
+---
+
+2019/12/11
+ * I didn't gain a lot from sleep. Still don't fully understand this stuff. But I might as well get a little more done today.
+ * So it turns out breaking down each little grouping of the code is called a subexpression. This `ParseParenExpr()` will obviously expect a trailing ')' if a '(' pops up. Apparently we just use the `LogError` function to pass a lil' message to the user...which makes sense! _That_ makes *sense*!
+ * So the reason the `ParseParenExpr()` has a so-far-undefined `ParseExpression()` is that this `ParseExpression()` can actually called the `ParseParenExpr()`, *RECURSION*! This helps "handle recursive grammars"...more info tbd. Also, this function doesn't create an AST node, as per the absence of something like `auto blah = std::make_unique<WhateverExprAST>(whateva)`. You _can_ have it make a node but the tutorial says "_the most important role of (parens) are to guide the parser and provide grouping. Once the parser constructs the AST, (parens) are not needed_". Makes sense in this context.That last part of the sentence for whatever reason made me visualize this tree structure that they've been talking about much better. Idk why tho.
+ * I _really_ better brush up on recursion. Funny that I literally directly mention recursion in the first entry of this whole project but the word recursion went in one ear and out the other.
+ * `ParseIdentifierpr()` uses something called a "_look-ahead_" and checks if "_if the current identifier is a stand alone variable...or if function call_" by checking the token after the '(', making `VariableExprAST` or `CallExprAST` as apropos. Now how exactly it's doing that in the code is left as an exercise for the reader- just kidding. I believe it's from the `ParseExpression()` call in this if statement:
+ ```
+ if (auto Arg = ParseExpression())
+                Args.push_back(std::move(Arg));
+ ```
+ * I think the `.push_back` just adds an element to the end of the list/vector/group-o'-numbers. So `.push_back` is putting the result(?) of `std::move(Arg)`, which returns an "_iterator to the initial position in the destination sequence_". A little over my head but...seems interesting and cool!
+ * Up to this in the parsing section is the basic expression-parsing logic. And its class is considered "*primary*" expressions.
+ * Next is wrapping up the *primary* expressions...but that'll be for tomorrow :>
