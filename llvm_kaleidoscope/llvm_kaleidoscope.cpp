@@ -292,6 +292,17 @@ static int GetTokPrecedence() {
     return TokPrec;
 }
 
+// expression
+//  ::= primary binoprhs
+static std::unique_ptr<ExprAST> ParseExpression() {
+    auto LHS = ParsePrimary();
+    if (!LHS) {
+        return nullptr; // well duh
+    }
+
+    return ParseBinOpRHS(0, std::move(LHS));
+}
+
 int main() {
     // install binary operators?!?!!? (aka mapping them in that std::map thing)
     // w/ 1 being lowest precedence :O
