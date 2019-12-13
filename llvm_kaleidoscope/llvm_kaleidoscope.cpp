@@ -256,3 +256,47 @@ static std::unique_ptr<ExprAST> ParseIdentifierExpr() {
 
     return std::make_unique<CallExprAST>(IdName, std::move(Args));
 }
+
+// Here's the 'entry point'
+// primary
+//  ::= identifierexpr
+//  ::= numberexpr
+//  ::= parenexpr
+static std::unique_ptr<ExprAST> ParsePrimary() {
+    switch (CurTok) {
+    case tok_identifier:
+        return ParseIdentifierExpr();
+    case tok_number:
+        return ParseNumberExpr();
+    case '(':
+        return ParseParenExpr();
+    // Well if it ain't part of these primaries then explode with the message
+    default:
+        return LogError("unknown token when expecting an expression...c'mon");
+    }
+}
+
+// BinopPrecedence: holds precedence for each binary operator defined
+static std::map<char, int> BinopPrecedence;
+
+// GetTokPrecedence: get precedence of pending binary operator token
+static int GetTokPrecedence() {
+    if (!isascii(CurTok)) {
+        return -1;
+    }
+    // make sure TokPrec is a declared binop by checking inside BinopPrecedence
+    int TokPrec = BinopPrecedence[CurTok];
+    if (TokPrec <= 0) {
+        return -1;
+    }
+    return TokPrec;
+}
+
+int main() {
+    // install binary operators?!?!!? (aka mapping them in that std::map thing)
+    // w/ 1 being lowest precedence :O
+    BinopPrecedence['<'] = 10;
+    BinopPrecedence['+'] = 20;
+    BinopPrecedence['-'] = 30;
+    BinopPrecedence['*'] = 40;
+}
