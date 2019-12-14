@@ -303,6 +303,30 @@ static std::unique_ptr<ExprAST> ParseExpression() {
     return ParseBinOpRHS(0, std::move(LHS));
 }
 
+// parses sequences of pairs for us
+// binorprhs
+//  ::= ('+' primary)*
+static std::unique_ptr<ExprAST> ParseBinOpRHS(int ExprPrec, std::unique_ptr<ExprAST> LHS) {
+    // if this is binop, find its precedence
+    while (1) {
+        // Hey I remember that function from up there!
+        int TokPrec = GetTokPrecedence();
+        // If this binop binds as tightly (wtf??) as current binop: consume.
+        if (TokPrec < ExprPrec) {
+            return LHS;
+        }
+
+        // we know this is a binop
+        int BinOp = CurTok;
+        getNextToken(); // nom binop
+        // parse primary expr after binary operator
+        auto RHS = ParsePrimary();
+        if (!RHS) {
+            return nullptr;
+        }
+    }
+}
+
 int main() {
     // install binary operators?!?!!? (aka mapping them in that std::map thing)
     // w/ 1 being lowest precedence :O
