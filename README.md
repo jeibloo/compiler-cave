@@ -84,7 +84,6 @@ auto Result = std::make_unique<BinaryExprAST>('+', std::move(LHS),
 ---
 
 2019/12/13
- * I'm running a hot forehead at some odd hours so I'd say it's the perfect time to continue creating my first lil' tutorial language/compiler!
  * Last part (I think) of the primary expressions is this `ParsePrimary()` function. Don't laugh but I'm just a little confused as to why the `ParsePrimary()` needs to be declared as a `std::unique_ptr<ExprAST>`? I'm throwing out a really uninformed guess here but is it because, and yes I did read back to the beginning of the chapter to remember, we want "_one object for each construct in the language_"? Cause declaring it as that `unique_ptr` thing makes sense then. Hi future self, let me know if that's right when you get smarter.
  * The LLVM masters are right, it _does_ make more sense that all these primary expression functions have CurTok as a known thing...look-aheads lookin' ahead.
  * Time for binary expressions! What does binary expression mean? Something like `x+y*z` as an example I guess (it's the + and \*).
@@ -93,4 +92,21 @@ auto Result = std::make_unique<BinaryExprAST>('+', std::move(LHS),
  * So now we got this `std::map<char, int> BinopPrecedence` (which is a "sorted associative container"_rolling eyes emoji_ which "contains key-value pairs" w/ "unique keys") to basically hold the `BinopPrecedence`s we're 'installing' in the `int main()`. Then we're using `GetTokPrecedence()`...which will then presumably be used later by something else which we will find out!
  * "_Having a map makes it easy to add new operators_" from their mouth to your ear-eyes.
  * Hmmm so this is interesting, "_Note that because parentheses are primary expressions, the binary expression parser doesn’t need to worry about nested subexpressions like (c+d) at all_" in regards to `a+b+(c+d)*e*f+g` specifically. Oh boy this is gonna take me a week to understand this one little part...
- * Alright I'm stopping here. QUITE interesting all this is. My fever definite helped moi understand some parts in some weird ways, thank you fever.
+
+---
+
+2019/12/14
+ * `ParseBinOpRHS(int ExprPrec...)` parses this -> \[binop, primaryexpr], so a "sequence of pairs" essentially. The `primaryexpr` is an expression's pointer for what's already parsed. If the binoprhs is empty it'll just return the expression parameter passed to it. The "precedence value passed into `ParseBinOpRHS` indicates the _minimal operator precedence_ that the function is allowed to \[consume]". Don't ask me what all this really means, I'm figuring it out as I go lol.
+ * As an example for a "pair stream" we can take \[+,x] '+' being the token and 'x' being the expression, and if the precedence: `BinopPrecedence['*'] = 40;` (as an example) is passed...it won't consume any tokens! The token of '+' is 20! Wow! idk!
+ * The `ParseBinOpRHS` stuff gets precedence of current token, check if too low, because we have invalid tokens' precedence as -1 this check knows the "_pair-stream_" ends when the "_token stream runs out of binary operators_". If the check is :greencheckmark: then we *know* the token is a binary operator and then we write this code:
+ ```
+ // we know this is a binop
+int BinOp = CurTok;
+getNextToken(); // nom binop
+// Parse primary expression after binary operator.
+auto RHS = ParsePrimary();
+if (!RHS)
+  return nullptr;
+ ```
+ * This chunk-o-code here noms and remembers the binop & then parses the primary expr that follows that binop. This "builds up the whole pair" which from the example we're drawing from is `a+b+(c+d)*e*f+g`, "which is \[+,b]".
+ * Next part is explaining how we parsed the lefthand side of the expression and "_one pair of the RHS sequence..._" but I don't feel like continuing right now, so, that's that. I'm gonna go read a book.
