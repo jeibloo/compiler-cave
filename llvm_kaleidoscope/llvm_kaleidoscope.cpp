@@ -324,7 +324,23 @@ static std::unique_ptr<ExprAST> ParseBinOpRHS(int ExprPrec, std::unique_ptr<Expr
         if (!RHS) {
             return nullptr;
         }
-    }
+
+        // if BinOp binds less tight w/ RHS than operator after RHS, let
+        // pending operator take RHS its LHS
+        int NextPrec = GetTokPrecedence();
+        if (TokPrec < NextPrec) {
+            // if precedence of binop to right of RHS is <= to precedence
+            // of current operator we know the parens associate as
+            // (a+b) binop
+            RHS = ParseBinOpRHS(TokPrec+1, std::move(RHS));
+            if (!RHS) {
+                return nullptr;
+            }
+        }
+
+        // Merge LHS/RHS
+        LHS = std::make_unique<BinaryExprAST>(BinOp, std::move(LHS), std::move(RHS));
+    } // loop to top
 }
 
 int main() {
