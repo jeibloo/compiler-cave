@@ -110,3 +110,9 @@ if (!RHS)
  ```
  * This chunk-o-code here noms and remembers the binop & then parses the primary expr that follows that binop. This "builds up the whole pair" which from the example we're drawing from is `a+b+(c+d)*e*f+g`, "which is \[+,b]".
  * Next part is explaining how we parsed the lefthand side of the expression and "_one pair of the RHS sequence..._" but I don't feel like continuing right now, so, that's that. I'm gonna go read a book.
+
+---
+
+2019/12/15
+ * This while loop that is dealing with the LHS and RHS of the expressions is difficult for me to understand but it seems this loop goes through the entire expression, binding together expressions and somehow knowing how to deal with the order of it all...it's honestly over my head a bit right now but at least I've been exposed to it.
+ * The next parts deal with handling function prototypes and then the driver function for all of what we've (they've really lmao) written so far. But today's a short day. :peaceemoji:
