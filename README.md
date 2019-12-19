@@ -116,3 +116,9 @@ if (!RHS)
 2019/12/15
  * This while loop that is dealing with the LHS and RHS of the expressions is difficult for me to understand but it seems this loop goes through the entire expression, binding together expressions and somehow knowing how to deal with the order of it all...it's honestly over my head a bit right now but at least I've been exposed to it.
  * The next parts deal with handling function prototypes and then the driver function for all of what we've (they've really lmao) written so far. But today's a short day. :peaceemoji:
+ 
+ ---
+ 
+ 2019/12/17
+  * Wrote the function prototype parsing code. Which literally just checks the tokens given in case there's odd stuff then `LogErrorP`s out. After it assigns the function name given (I think) and then just pushes the arguments into a string vector and returns the pointer to the `PrototypeAST` object with the argument names with `std::move()` which again produces an 'rvalue-reference' to an object...what rvalue is can be [explained](http://thbecker.net/articles/rvalue_references/section_01.html) from this Thomas Becker fellow.
+  * Next we're writing the definition object for the function which inside of declares `auto Proto = ParsePrototype()`, with that function being the last thing we just wrote up above over yonder. And then it just makes sure that `ParseExpression()` works (which calls from `ParsePrimary()` and so on), checks with an `if` statement and if it's allll :okhand: then it just simply returns a unique pointer to this new(?) object with `std::move(Proto), std::move(E))` as arguments. `E` is just `ParseExpression()`'s returned value btw.
