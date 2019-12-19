@@ -343,6 +343,45 @@ static std::unique_ptr<ExprAST> ParseBinOpRHS(int ExprPrec, std::unique_ptr<Expr
     } // loop to top
 }
 
+// Prototype
+//  ::= id '(' id* ')'
+static std::unique_ptr<PrototypeAST> ParsePrototype() {
+    if (CurTok != tok_identifier) {
+        return LogErrorP("Expected function name in prototype")
+    }
+
+    std::string FnName = IdentifierStr; // quite literally the function name I think
+    getNextToken(); 
+
+    if (CurTok != '(') {
+        return LogErrorP("Expected '(' in prototype");
+    }
+
+    // read list of argument names
+    std::vector<std::string> ArgNames;
+    while (getNextToken() == tok_identifier) {
+        ArgNames.push_back(IdentifierStr);
+    }
+    if (CurTok != ')') {
+        return LogErrorP("Expected ')' in prototype");
+    }
+    // Success
+    getNextToken(); // eat ')'
+    return std::make_unique<PrototypeAST>(FnName, std::move(ArgNames));
+}
+
+// Definition ::= 'def' prototype expression
+static std::unique_ptr<FunctionAST> ParseDefinition() {
+    getNextToken(); // nom the def 
+    auto Proto = ParsePrototype();
+    if (!Proto) return nullptr; // obviously if nothing there then gtfo
+
+    if (auto E = ParseExpression()) {
+        return std::make_unique<FunctionAST>(std::move(Proto), std::move(E));
+    }
+    return nullptr;
+}
+
 int main() {
     // install binary operators?!?!!? (aka mapping them in that std::map thing)
     // w/ 1 being lowest precedence :O
