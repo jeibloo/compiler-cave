@@ -122,3 +122,8 @@ if (!RHS)
  2019/12/17
   * Wrote the function prototype parsing code. Which literally just checks the tokens given in case there's odd stuff then `LogErrorP`s out. After it assigns the function name given (I think) and then just pushes the arguments into a string vector and returns the pointer to the `PrototypeAST` object with the argument names with `std::move()` which again produces an 'rvalue-reference' to an object...what rvalue is can be [explained](http://thbecker.net/articles/rvalue_references/section_01.html) from this Thomas Becker fellow.
   * Next we're writing the definition object for the function which inside of declares `auto Proto = ParsePrototype()`, with that function being the last thing we just wrote up above over yonder. And then it just makes sure that `ParseExpression()` works (which calls from `ParsePrimary()` and so on), checks with an `if` statement and if it's allll :okhand: then it just simply returns a unique pointer to this new(?) object with `std::move(Proto), std::move(E))` as arguments. `E` is just `ParseExpression()`'s returned value btw.
+
+---
+
+2019/12/19
+ * `extern` time! AKA: "_prototypes w/ no body_". And then there's "_top-level expressions_"...which in this context is just baffling to me right now and I'm annoyed by it all.
