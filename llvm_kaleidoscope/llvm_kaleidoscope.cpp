@@ -1,5 +1,8 @@
 /* https://llvm.org/docs/tutorial/MyFirstLanguageFrontend/index.html
 MAJORITY (PRETTY MUCH ALL) OF CODE FROM ^^^ LLVM SITE */
+#include "llvm/ADT/STLExtras.h"
+#include <algorithm>
+#include <map>
 #include <cstdio>
 #include <cctype>
 #include <string>
@@ -91,6 +94,7 @@ One object for each construct in language.
 We got expressions, a prototype, & function object.
 */
 
+namespace {
 // ExprAST - Base class for all expression nodes(?)
 // I see, it's for the one below and other like it...obviously I guess lol
 class ExprAST {
@@ -160,6 +164,7 @@ public:
         : Proto(std::move(Proto)), Body(std::move(Body)) {}
 };
 
+} // end anon namespace
 /* Chapter 2b: Parser
 "referring to the syntactic analysis of the 
 input code into its component parts in order 
@@ -396,6 +401,57 @@ static std::unique_ptr<FunctionAST> ParseTopLevelExpr() {
         return std::make_unique<FunctionAST>(std::move(Proto), std::move(E));
     }
     return nullptr;
+}
+
+/* Top-level Parsing
+*/
+static void HandleDefinition() {
+    if (ParseDefinition()) {
+        fprintf(stderr, "Parsed func definition.\n");
+    } else {
+        getNextToken(); // skip token for error recovery
+    }
+    }
+}
+
+static void HandleExtern() {
+    if (ParseExtern()) {
+        fprintf(stderr, "Parsed extern.\n");
+    } else {
+        getNextToken(); // skip token for error recovery
+    }
+}
+
+static void HandleTopLevelExpression() {
+    // eval top-level expression into anon function
+    if (ParseTopLevelExpr()) {
+        fprintf(stderr, "Parsed top-level expr\n");
+    } else {
+        getNextToken(); // skip token for error recovery
+    }
+}
+
+// top ::= definition | external | expression | ';' ???
+static void MainLoop() {
+    while (true) {
+        fprintf(stderr, "ready>");
+        switch (CurTok) {
+            case tok_eof:
+                return;
+            case ';': // ignore top-level semicolons
+                getNextToken();
+                break;
+            case tok_def:
+                HandleDefinition();
+                break;
+            case tok_extern:
+                HandleExtern();
+                break;
+            default:
+                HandleTopLevelExpression();
+                break;
+        }
+    }
 }
 
 int main() {
