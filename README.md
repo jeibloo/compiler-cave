@@ -127,3 +127,10 @@ if (!RHS)
 
 2019/12/19
  * `extern` time! AKA: "_prototypes w/ no body_". And then there's "_top-level expressions_"...which in this context is just baffling to me right now and I'm annoyed by it all.
+ 
+ ---
+ 
+ 2019/12/21
+  * Using `namespace` to create an 'anonymous namespace'. For one of the upper functions...idk why it was missing before.
+  * Added this `static void MainLoop()` function. Switches betwixt token something or other.
+  * Added these HandleExtern + HandleDefinition etc stuff above that mainloop...and I think we're onto the next part!
