@@ -461,4 +461,13 @@ int main() {
     BinopPrecedence['+'] = 20;
     BinopPrecedence['-'] = 30;
     BinopPrecedence['*'] = 40;
+
+    // Make sure first token is ready
+    fprintf(stderr, "ready> ");
+    getNextToken();
+
+    // Run main interpreter loop
+    MainLoop();
+
+    return 0;
 }
