@@ -134,3 +134,10 @@ if (!RHS)
   * Using `namespace` to create an 'anonymous namespace'. For one of the upper functions...idk why it was missing before.
   * Added this `static void MainLoop()` function. Switches betwixt token something or other.
   * Added these HandleExtern + HandleDefinition etc stuff above that mainloop...and I think we're onto the next part!
+
+---
+
+2020/01/06
+ * Added a bit of code at the end of `main()` for getting the first token then running the `MainLoop()`. This entry point makes me excited because I feel like we've come full circle implementing the basic AST, Parser etc...can only imagine what's next on this LLVM platform.
+ * Chapter 3 is here!!! Called LLVM IR, it's going to "_...teach you a little bit about how LLVM does thing..._" apparently it's also way easier generating LLVM IR (wtf is IR?) code than writing up the lexer & parser like before.
+ * Haha you thought I was going to actually do more work?! Not right after break I'm not, yeehaw.
